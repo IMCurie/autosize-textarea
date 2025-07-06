@@ -1,0 +1,7 @@
+packages:
+  - .
+  - example
+
+ignoredBuiltDependencies:
+  - "@swc/core"
+  - "@tailwindcss/oxide"
