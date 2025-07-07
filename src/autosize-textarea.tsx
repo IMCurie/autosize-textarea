@@ -1,22 +1,26 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useCallback } from "react";
 import { useAutosizeTextarea } from "./use-autosize-textarea";
-import { UseAutosizeTextareaProps } from "./types";
+import { AutosizeTextareaProps } from "./types";
 
 export const AutosizeTextarea = forwardRef<
   HTMLTextAreaElement,
-  UseAutosizeTextareaProps
->(function AutosizeTextarea({ className, ...props }, externalRef) {
+  AutosizeTextareaProps
+>(function AutosizeTextarea(props, externalRef) {
   const { ref: innerRef, textareaProps } = useAutosizeTextarea(props);
 
-  useImperativeHandle(
-    externalRef,
-    () => {
-      return innerRef.current!;
+  const mergedRef = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      innerRef.current = node;
+      if (typeof externalRef === "function") {
+        externalRef(node);
+      } else if (externalRef) {
+        externalRef.current = node;
+      }
     },
-    [innerRef]
+    [externalRef]
   );
 
-  return <textarea {...textareaProps} ref={innerRef} className={className} />;
+  return <textarea {...textareaProps} ref={mergedRef} />;
 });
 
 AutosizeTextarea.displayName = "AutosizeTextarea";
