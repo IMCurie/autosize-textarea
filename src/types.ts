@@ -14,3 +14,12 @@ export interface UseAutosizeTextareaResult {
 }
 
 export interface AutosizeTextareaProps extends UseAutosizeTextareaProps {}
+
+export interface CachedStyles {
+  boxSizing: string;
+  lineHeight: number;
+  pT: number;
+  pB: number;
+  bT: number;
+  bB: number;
+}

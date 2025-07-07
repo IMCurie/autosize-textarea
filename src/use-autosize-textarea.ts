@@ -1,7 +1,8 @@
-import { useRef, useLayoutEffect, useState } from "react";
+import { useRef, useLayoutEffect, useState, useCallback } from "react";
 import type {
   UseAutosizeTextareaProps,
   UseAutosizeTextareaResult,
+  CachedStyles,
 } from "./types";
 
 export function useAutosizeTextarea(
@@ -17,35 +18,43 @@ export function useAutosizeTextarea(
   } = props;
   const ref = useRef<HTMLTextAreaElement>(null);
   const [rows, setRows] = useState(minRows);
+  const cacheStyle = useRef<CachedStyles | null>(null);
+
+  const getCachedStyles = useCallback(
+    (textarea: HTMLTextAreaElement): CachedStyles => {
+      if (cacheStyle.current) {
+        return cacheStyle.current;
+      }
+
+      const cs = window.getComputedStyle(textarea);
+      const styles: CachedStyles = {
+        boxSizing: cs.boxSizing,
+        lineHeight: parseFloat(cs.lineHeight),
+        pT: parseFloat(cs.paddingTop),
+        pB: parseFloat(cs.paddingBottom),
+        bT: parseFloat(cs.borderTopWidth),
+        bB: parseFloat(cs.borderBottomWidth),
+      };
+
+      cacheStyle.current = styles;
+      return styles;
+    },
+    []
+  );
 
   useLayoutEffect(() => {
     const textarea = ref.current;
     if (!textarea) return;
 
-    textarea.style.height = "0px";
-    const cs = window.getComputedStyle(textarea);
-    const lineHeight = parseFloat(cs.lineHeight);
-    const pT = parseFloat(cs.paddingTop);
-    const pB = parseFloat(cs.paddingBottom);
-    const bT = parseFloat(cs.borderTopWidth);
-    const bB = parseFloat(cs.borderBottomWidth);
+    const styles = getCachedStyles(textarea);
 
     // scrollHeight 包含 content + padding，不含 border
-    const contentHeight = textarea.scrollHeight - pT - pB;
+    const contentHeight = textarea.scrollHeight - styles.pT - styles.pB;
 
     const contentRows = Math.min(
       maxRows,
-      Math.max(minRows, Math.floor(contentHeight / lineHeight))
+      Math.max(minRows, Math.floor(contentHeight / styles.lineHeight))
     );
-
-    console.log(contentRows); // 添加调试信息
-    console.log({
-      scrollHeight: textarea.scrollHeight,
-      contentHeight,
-      lineHeight,
-      contentRows,
-      value: value?.length || 0,
-    });
     setRows(contentRows);
 
     /**
@@ -53,11 +62,14 @@ export function useAutosizeTextarea(
      * box-border, height = contentHeight + pT + pB + bT + bB
      * content-box, height = contentHeight
      */
-    const boxSizing = cs.boxSizing;
     const finalHeight =
-      boxSizing === "border-box"
-        ? contentRows * lineHeight + pT + pB + bT + bB
-        : contentRows * lineHeight;
+      styles.boxSizing === "border-box"
+        ? contentRows * styles.lineHeight +
+          styles.pT +
+          styles.pB +
+          styles.bT +
+          styles.bB
+        : contentRows * styles.lineHeight;
 
     textarea.style.height = `${finalHeight}px`;
   }, [value, minRows, maxRows]);
