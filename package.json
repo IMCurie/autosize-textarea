@@ -1,9 +1,10 @@
 {
-  "name": "auto-resize-textarea",
+  "name": "autosize-textarea",
   "version": "0.0.1",
   "type": "module",
   "description": "A simple React auto-resizing textarea",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -14,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IMCurie/auto-resize-textarea.git"
+    "url": "git+https://github.com/IMCurie/autosize-textarea.git"
   },
   "author": "IMCurie",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/IMCurie/auto-resize-textarea/issues"
+    "url": "https://github.com/IMCurie/autosize-textarea/issues"
   },
-  "homepage": "https://github.com/IMCurie/auto-resize-textarea#readme",
+  "homepage": "https://github.com/IMCurie/autosize-textarea#readme",
   "devDependencies": {
     "@types/react": "^19.1.8",
     "bunchee": "^6.5.4",

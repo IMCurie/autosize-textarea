@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AutosizeTextarea } from "auto-resize-textarea";
+import { AutosizeTextarea } from "autosize-textarea";
 
 export default function Home() {
   const [text, setText] = useState("");
